@@ -7,6 +7,7 @@ const router = createRouter({
         {
             path: '/',
             component: AppLayout,
+            // meta: { requireAuth: true },
             children: [
                 {
                     path: '/',
@@ -20,6 +21,22 @@ const router = createRouter({
                     name: 'crud-medico',
                     component: () => import('@/views/admin/CrudMedico.vue')
                 },
+
+                // Rutas de Médico
+                {
+                    path: '/medico/turnos',
+                    name: 'medico',
+                    component: () => import('@/views/medico/Turnos.vue')
+                },
+
+                  // Rutas de Paciente
+                {
+                    path: '/paciente/turnos',
+                    name: 'paciente',
+                    component: () => import('@/views/paciente/Turnos.vue')
+                },
+
+                // Rutas de Paciente
 
                 //
                 {
@@ -129,6 +146,7 @@ const router = createRouter({
         {
             path: '/auth/login',
             name: 'login',
+            meta: { requireAuth: false },
             component: () => import('@/views/pages/auth/Login.vue')
         },
         {
@@ -140,8 +158,44 @@ const router = createRouter({
             path: '/auth/error',
             name: 'error',
             component: () => import('@/views/pages/auth/Error.vue')
+        },
+        { 
+            path: '/:pathMatch(.*)*',
+            redirect: "/",
+            meta: { requireAuth: true },
         }
     ]
 });
+
+// router.beforeEach(async (to, from, next) => {
+
+//     try {
+//         const authStore = useAuthStore()
+//         const userLoged = !!authStore.getToken()
+
+//         if (to.matched.some(to => to.meta.requireAuth)) {
+//             if (userLoged) { 
+//                 const rol = authStore.getRol()
+//                 if (rol == 'medico') {
+//                     next()
+//                 } else if (rol == 'paciente') {
+//                     next()
+//                 } else {
+//                     authStore.logout()
+//                     next({ name: 'login'}) 
+//                 }
+//             } else {
+//                 authStore.logout()
+//                 next({ name: 'login'}) 
+//             }
+//         } else {
+//             next()
+//         }
+        
+//     } catch (error) {
+//         console.log(error);
+//         next({ name: 'login'}) 
+//     }
+// })
 
 export default router;
