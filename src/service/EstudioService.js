@@ -18,15 +18,23 @@ export default class EstudioService {
     //     return await res.json();
     // }
 
-    async findAll() {
+    async findAll({}) {
         try {
-            // const config = {
-            //     headers: {
-            //         Authorization: 'Bearer ' + getToken()
-            //     }
-            // };
 
-            const { data } = await api.get('/estudio'); // , config
+            const { data } = await api.get('/estudios');
+            console.log(data);
+
+            return data;
+        } catch (error) {
+            if (error.response.data) throw error.response.data;
+            throw error;
+        }
+    }
+
+    // http://localhost:8081/estudios?paciente=1
+    async findAllByPaciente({idPaciente}) {
+        try {
+            const { data } = await api.get(`/estudios?paciente=${idPaciente}`); 
             console.log(data);
 
             return data;

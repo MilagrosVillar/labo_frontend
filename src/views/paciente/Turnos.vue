@@ -1,20 +1,19 @@
 <script setup>
-import MedicoService from '@/service/MedicoService';
+
 import TurnoService from '@/service/TurnoService';
 import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, ref } from 'vue';
 
-const medicoService = new MedicoService();
 const turnoService = new TurnoService();
 
 onMounted(() => {
-    turnoService.findAllByMedico({medico: 1}).then((data) => (medicos.value = data));
+    turnoService.findAllByPaciente({idPaciente: 1}).then((data) => (turnos.value = data));
 });
 
 const toast = useToast();
 const dt = ref();
-const medicos = ref();
+const turnos = ref();
 const medicoDialog = ref(false);
 const deleteMedicoDialog = ref(false);
 const deleteMedicosDialog = ref(false);
@@ -148,15 +147,31 @@ function getStatusLabel(status) {
             return null;
     }
 }
+
+function formatFechaHora(fechaHora) {
+    if (!fechaHora) return '';
+    
+    const fecha = new Date(fechaHora);
+    
+    // Formato: DD/MM/YYYY HH:mm
+    return fecha.toLocaleString('es-AR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
 </script>
+
 
 <template>
     <div>
         <div class="card">
             <Toolbar class="mb-6">
                 <template #start>
-                    <Button label="Nuevo Médico" icon="pi pi-plus" severity="secondary" class="mr-2" @click="openNew" />
-                    <Button label="Eliminar Médicos" icon="pi pi-trash" severity="secondary" @click="confirmDeleteSelected" :disabled="!selectedMedicos || !selectedMedicos.length" />
+                    <Button label="Nuevo Turno" icon="pi pi-plus" severity="secondary" class="mr-2" @click="openNew" />
+                    <Button label="Cancelar Médicos" icon="pi pi-trash" severity="secondary" @click="confirmDeleteSelected" :disabled="!selectedMedicos || !selectedMedicos.length" />
                 </template>
 
                 <template #end>
@@ -167,7 +182,7 @@ function getStatusLabel(status) {
             <DataTable
                 ref="dt"
                 v-model:selection="selectedMedicos"
-                :value="medicos"
+                :value="turnos"
                 dataKey="id"
                 :paginator="true"
                 :rows="10"
@@ -188,20 +203,26 @@ function getStatusLabel(status) {
                     </div>
                 </template>
 
-                <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
-                <Column field="apellido" header="Apellido" sortable style="min-width: 12rem"></Column>
-                <Column field="nombre" header="Nombre" sortable style="min-width: 12rem"></Column>
-                <Column field="email" header="Email" sortable style="min-width: 12rem"></Column>
-                <Column field="telefono" header="Teléfono" sortable style="min-width: 12rem"></Column>
-                <Column field="especialidad" header="Especialidad" sortable style="min-width: 12rem">
+                <Column field="fechaDeTurno" header="Fecha y Hora" sortable style="min-width: 12rem">
                     <template #body="slotProps">
-                        <Tag :value="slotProps.data.especialidad" :severity="getStatusLabel(slotProps.data.especialidad)" />
+                        {{ formatFechaHora(slotProps.data.fechaDeTurno) }}
+                    </template>            
+                </Column>
+                <Column field="medico.apellido" header="Apellido" sortable style="min-width: 12rem"></Column>
+                <Column field="medico.nombre" header="Nombre" sortable style="min-width: 12rem"></Column>
+                <Column field="medico.email" header="Email" sortable style="min-width: 12rem"></Column>
+                <Column field="medico.telefono" header="Teléfono" sortable style="min-width: 12rem"></Column>
+                <Column field="medico.especialidad" header="Especialidad" sortable style="min-width: 12rem">
+                    <template #body="slotProps">
+                        <Tag :value="slotProps.data.medico.especialidad" :severity="getStatusLabel(slotProps.data.medico.especialidad)" />
                     </template>
                 </Column>
+                <!--para el color de los botones-->
+
                 <Column :exportable="false" style="min-width: 12rem">
                     <template #body="slotProps">
-                        <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editMedico(slotProps.data)" />
-                        <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteMedico(slotProps.data)" />
+                        <Button label="Atender" icon="pi pi-plus" severity="primary" class="mr-2" @click="editMedico(slotProps.data)" />
+                        <Button Label="Cancelar" icon="pi pi-trash" outlined severity="danger" class="mr-2"  @click="confirmDeleteMedico(slotProps.data)" />
                     </template>
                 </Column>
             </DataTable>

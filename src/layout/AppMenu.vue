@@ -27,7 +27,9 @@ const model = ref([
     
      {
         label: 'Paciente',
-        items: [{ label: 'Mis turnos', icon: 'pi pi-fw pi-pencil', to: '/paciente/turnos' }]
+        items: [
+            { label: 'Mis turnos', icon: 'pi pi-fw pi-pencil', to: '/paciente/turnos' },
+            { label: 'Mis estudios', icon: 'pi pi-fw pi-pencil', to: '/paciente/estudios' }]
     },
 
     // {
@@ -167,6 +169,7 @@ const model = ref([
             <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
             <li v-if="item.separator" class="menu-separator"></li>
         </template>
+        
     </ul>
 </template>
 

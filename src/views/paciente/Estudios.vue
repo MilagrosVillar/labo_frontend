@@ -1,19 +1,20 @@
 <script setup>
-
+import EstudioService from '@/service/EstudioService';
 import TurnoService from '@/service/TurnoService';
 import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, ref } from 'vue';
 
-const turnoService = new TurnoService();
+const estudioService = new EstudioService();
 
 onMounted(() => {
-    turnoService.findAllByMedico({idMedico: 1}).then((data) => (turnos.value = data));
+    // estudioService.findAllByPaciente({idPaciente: 1}).then((data) => (estudios.value = data));
+    estudioService.findAll({}).then((data) => (estudios.value = data));
 });
 
 const toast = useToast();
 const dt = ref();
-const turnos = ref();
+const estudios = ref();
 const medicoDialog = ref(false);
 const deleteMedicoDialog = ref(false);
 const deleteMedicosDialog = ref(false);
@@ -45,7 +46,6 @@ function hideDialog() {
     submitted.value = false;
 }
 
-// agregar, actualizar
 const saveMedico = async () => {
     submitted.value = true;
     if (
@@ -148,6 +148,7 @@ function getStatusLabel(status) {
             return null;
     }
 }
+
 function formatFechaHora(fechaHora) {
     if (!fechaHora) return '';
     
@@ -164,13 +165,14 @@ function formatFechaHora(fechaHora) {
 }
 </script>
 
+
 <template>
     <div>
         <div class="card">
             <Toolbar class="mb-6">
                 <template #start>
-                    <Button label="Abrir turno" icon="pi pi-plus" severity="secondary" class="mr-2" @click="openNew" />
-    
+                    <Button label="Nuevo Turno" icon="pi pi-plus" severity="secondary" class="mr-2" @click="openNew" />
+                    <Button label="Cancelar Médicos" icon="pi pi-trash" severity="secondary" @click="confirmDeleteSelected" :disabled="!selectedMedicos || !selectedMedicos.length" />
                 </template>
 
                 <template #end>
@@ -181,7 +183,7 @@ function formatFechaHora(fechaHora) {
             <DataTable
                 ref="dt"
                 v-model:selection="selectedMedicos"
-                :value="turnos"
+                :value="estudios"
                 dataKey="id"
                 :paginator="true"
                 :rows="10"
@@ -192,7 +194,7 @@ function formatFechaHora(fechaHora) {
             >
                 <template #header>
                     <div class="flex flex-wrap gap-2 items-center justify-between">
-                        <h4 class="m-0">Gestión de turnos</h4>
+                        <h4 class="m-0">Estudios</h4>
                         <IconField>
                             <InputIcon>
                                 <i class="pi pi-search" />
@@ -207,15 +209,13 @@ function formatFechaHora(fechaHora) {
                         {{ formatFechaHora(slotProps.data.fechaDeTurno) }}
                     </template>            
                 </Column>
-                <Column field="paciente.apellido" header="Apellido" sortable style="min-width: 12rem"></Column>
-                <Column field="paciente.nombre" header="Nombre" sortable style="min-width: 12rem"></Column>
-                <Column field="paciente.email" header="Email" sortable style="min-width: 12rem"></Column>
-                <Column field="paciente.telefono" header="Teléfono" sortable style="min-width: 12rem"></Column>
+                <Column field="descripcion" header="Descripción" sortable style="min-width: 12rem"></Column>
+                <Column field="nombre" header="Nombre" sortable style="min-width: 12rem"></Column>
+                <!--para el color de los botones-->
 
                 <Column :exportable="false" style="min-width: 12rem">
                     <template #body="slotProps">
-                        <Button label="Atender" icon="pi pi-plus" severity="primary" class="mr-2" @click="editMedico(slotProps.data)" />
-                        <Button Label="Cancelar" icon="pi pi-trash" outlined severity="danger" class="mr-2"  @click="confirmDeleteMedico(slotProps.data)" />
+                        <Button label="Descargar" icon="pi pi-plus" outlined severity="primary" class="mr-2" @click="editMedico(slotProps.data)" />
                     </template>
                 </Column>
             </DataTable>

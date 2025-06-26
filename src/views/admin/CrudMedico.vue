@@ -43,6 +43,7 @@ function hideDialog() {
     medicoDialog.value = false;
     submitted.value = false;
 }
+//agregar o actualizar medic
 
 const saveMedico = async () => {
     submitted.value = true;
@@ -108,6 +109,8 @@ function confirmDeleteMedico(med) {
     medico.value = med;
     deleteMedicoDialog.value = true;
 }
+
+// Eliminar médico
 
 function deleteMedico() {
     medicos.value = medicos.value.filter((val) => val.idMedico !== medico.value.idMedico);

@@ -36,7 +36,14 @@ const router = createRouter({
                     component: () => import('@/views/paciente/Turnos.vue')
                 },
 
-                // Rutas de Paciente
+                // Rutas de Estudio ypaciente
+                {
+                    path: '/paciente/estudios',
+                    name: 'estudios',
+                    component: () => import('@/views/paciente/Estudios.vue')
+                },
+
+                
 
                 //
                 {
